@@ -1,0 +1,102 @@
+#!/bin/bash
+               # squid		This shell script takes care of starting and stopping
+               #		Squid Internet Object Cache
+               #
+               # chkconfig: - 90 25
+               # description: Squid - Internet Object Cache. Internet object caching is \
+               # 	a way to store requested Internet objects (i.e., data available \
+               # 	via the HTTP, FTP, and gopher protocols) on a system closer to the \
+               #	requesting site than to the source. Web browsers can then use the \
+               #	local Squid cache as a proxy HTTP server, reducing access time as \
+               #	well as bandwidth consumption.
+               # pidfile: /var/run/squid.pid
+               # config: /etc/squid/squid.conf
+
+               PATH=/usr/bin:/sbin:/bin:/usr/sbin
+               export PATH
+
+               # Source function library.
+               . /etc/rc.d/init.d/functions
+
+               # Source networking configuration.
+               . /etc/sysconfig/network
+
+               # Check that networking is up.
+               [ ${NETWORKING} = "no" ] && exit 0
+
+               # check if the squid conf file is present
+               [ -f /etc/squid/squid.conf ] || exit 0
+
+               # determine the name of the squid binary
+               [ -f /usr/sbin/squid ] && SQUID=squid
+               [ -z "$SQUID" ] && exit 0
+
+               # determine which one is the cache_swap directory
+               CACHE_SWAP=`sed -e 's/#.*//g' /etc/squid/squid.conf | \
+               grep cache_dir | sed -e 's/cache_dir//' | \
+               cut -d ' ' -f 2`
+               [ -z "$CACHE_SWAP" ] && CACHE_SWAP=/cache
+
+               # default squid options
+               # -D disables initial dns checks. If you most likely will not to have an
+               #    internet connection when you start squid, uncomment this
+               #SQUID_OPTS="-D"
+
+               RETVAL=0
+               case "$1" in
+               start)
+               echo -n "Starting $SQUID: "
+               for adir in $CACHE_SWAP; do
+               if [ ! -d $adir/00 ]; then 
+               echo -n "init_cache_dir $adir... "
+               $SQUID -z -F 2>/dev/null
+               fi
+               done
+               $SQUID $SQUID_OPTS &
+               RETVAL=$?
+               echo $SQUID
+               [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$SQUID
+               ;;
+
+               stop)
+               echo -n "Stopping $SQUID: "
+               $SQUID -k shutdown &
+               RETVAL=$?
+               if [ $RETVAL -eq 0 ] ; then
+               rm -f /var/lock/subsys/$SQUID
+               while : ; do
+               [ -f /var/run/squid.pid ] || break
+               sleep 2 && echo -n "." 
+               done
+               echo "done"
+               else
+               echo
+               fi
+               ;;
+
+               reload)
+               $SQUID $SQUID_OPTS -k reconfigure 
+               exit $?
+               ;;
+
+               restart)
+               $0 stop
+               $0 start
+               ;;
+
+               status)
+               status $SQUID
+               $SQUID -k check
+               exit $?
+               ;;
+
+               probe)
+               exit 0;
+               ;;
+
+               *)
+               echo "Usage: $0 {start|stop|status|reload|restart}"
+               exit 1
+               esac
+
+               exit $RETVAL
