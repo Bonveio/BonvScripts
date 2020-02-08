@@ -622,12 +622,9 @@ setenv CLIENT_CERT 0
 reneg-sec 0
 verb 1
 http-proxy $IPADDR $Privoxy_Port1
-http-proxy-option VERSION 1.1
 http-proxy-option CUSTOM-HEADER ""
-http-proxy-option CUSTOM-HEADER "POST https://secure.viber.com HTTP/1.1"
-http-proxy-option CUSTOM-HEADER "Host: secure.viber.com"
-http-proxy-option CUSTOM-HEADER X-Forward-Host secure.viber.com
-http-proxy-option CUSTOM-HEADER Referrer secure.viber.com
+http-proxy-option CUSTOM-HEADER "POST https://viber.com HTTP/1.1"
+http-proxy-option CUSTOM-HEADER "X-Forwarded-For: viber.com"
 
 <ca>
 $(cat /etc/openvpn/ca.crt)
