@@ -95,7 +95,7 @@ function InstWebmin(){
  wget -qO webmin.deb "$WebminFile"
  
  # Installing .deb package for webmin
- dpkg --install webmin.deb
+ dpkg -s --install webmin.deb
  
  rm -rf webmin.deb
  
@@ -203,7 +203,6 @@ MyStunnelD
  
  # Creating stunnel certifcate using openssl
  openssl req -new -x509 -days 9999 -nodes -subj "/C=PH/ST=NCR/L=Manila/O=$MyScriptName/OU=$MyScriptName/CN=$MyScriptName" -out /etc/stunnel/stunnel.pem -keyout /etc/stunnel/stunnel.pem &> /dev/null
-##  > /dev/null 2>&1
 
  # Creating stunnel server config
  cat <<'MyStunnelC' > /etc/stunnel/stunnel.conf
@@ -443,6 +442,8 @@ fi
  echo 1 > /proc/sys/net/ipv4/ip_forward
 
  # Iptables Rule for OpenVPN server
+ PUBLIC_INET="$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)"
+ IPCIDR='10.200.0.0/16'
  iptables -I FORWARD -s $IPCIDR -j ACCEPT
  iptables -t nat -A POSTROUTING -o $PUBLIC_INET -j MASQUERADE
  iptables -t nat -A POSTROUTING -s $IPCIDR -o $PUBLIC_INET -j MASQUERADE
