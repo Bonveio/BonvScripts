@@ -440,6 +440,7 @@ fi
  sed -i '/net.ipv4.ip_forward.*/d' /etc/sysctl.d/*.conf
  echo 'net.ipv4.ip_forward=1' > /etc/sysctl.d/20-openvpn.conf
  sysctl --system &> /dev/null
+ echo 1 > /proc/sys/net/ipv4/ip_forward
 
  # Iptables Rule for OpenVPN server
  iptables -I FORWARD -s $IPCIDR -j ACCEPT
