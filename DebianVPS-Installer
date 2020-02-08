@@ -494,14 +494,31 @@ myPrivoxy
  # I'm setting Some Squid workarounds to prevent Privoxy's overflowing file descriptors that causing 50X error when clients trying to connect to your proxy server(thanks for this trick @homer_simpsons)
  rm -rf /etc/squid/sq*
  cat <<'mySquid' > /etc/squid/squid.conf
+via off
+forwarded_for delete
+request_header_access Authorization allow all
+request_header_access Proxy-Authorization allow all
+request_header_access Cache-Control allow all
+request_header_access Content-Length allow all
+request_header_access Content-Type allow all
+request_header_access Date allow all
+request_header_access Host allow all
+request_header_access If-Modified-Since allow all
+request_header_access Pragma allow all
+request_header_access Accept allow all
+request_header_access Accept-Charset allow all
+request_header_access Accept-Encoding allow all
+request_header_access Accept-Language allow all
+request_header_access Connection allow all
+request_header_access X-Forwarded-For deny all
+request_header_access Via deny all
+request_header_access Referer deny all
+request_header_access All deny all
+http_access allow localhost
 http_access deny all
-cache_peer 127.0.0.1 parent SquidCacheHelper 7 no-query no-digest default
+http_port 127.0.0.1:8989
+cache_peer 127.0.0.1 parent 8000 7 no-query no-digest default
 cache deny all
-coredump_dir /var/spool/squid
-refresh_pattern ^ftp: 1440 20% 10080
-refresh_pattern ^gopher: 1440 0% 1440
-refresh_pattern -i (/cgi-bin/|\?) 0 0% 0
-refresh_pattern . 0 20% 4320
 mySquid
  sed -i "s|SquidCacheHelper|$Privoxy_Port1|g" /etc/squid/squid.conf
 
