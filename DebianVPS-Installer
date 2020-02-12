@@ -203,6 +203,7 @@ MyStunnelD
  
  # Creating stunnel certifcate using openssl
  openssl req -new -x509 -days 9999 -nodes -subj "/C=PH/ST=NCR/L=Manila/O=$MyScriptName/OU=$MyScriptName/CN=$MyScriptName" -out /etc/stunnel/stunnel.pem -keyout /etc/stunnel/stunnel.pem &> /dev/null
+##  > /dev/null 2>&1
 
  # Creating stunnel server config
  cat <<'MyStunnelC' > /etc/stunnel/stunnel.conf
@@ -436,10 +437,8 @@ fi
 
  # Allow IPv4 Forwarding
  sed -i '/net.ipv4.ip_forward.*/d' /etc/sysctl.conf
- sed -i '/net.ipv4.ip_forward.*/d' /etc/sysctl.d/*.conf
  echo 'net.ipv4.ip_forward=1' > /etc/sysctl.d/20-openvpn.conf
  sysctl --system &> /dev/null
- echo 1 > /proc/sys/net/ipv4/ip_forward
 
  # Iptables Rule for OpenVPN server
  PUBLIC_INET="$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)"
@@ -447,6 +446,9 @@ fi
  iptables -I FORWARD -s $IPCIDR -j ACCEPT
  iptables -t nat -A POSTROUTING -o $PUBLIC_INET -j MASQUERADE
  iptables -t nat -A POSTROUTING -s $IPCIDR -o $PUBLIC_INET -j MASQUERADE
+ 
+ # Enabling IPv4 Forwarding
+ echo 1 > /proc/sys/net/ipv4/ip_forward
  
  # Starting OpenVPN server
  systemctl start openvpn@server
@@ -469,8 +471,8 @@ confdir /etc/privoxy
 logdir /var/log/privoxy
 filterfile default.filter
 logfile logfile
-listen-address 0.0.0.0:8000
-listen-address 0.0.0.0:8080
+listen-address 0.0.0.0:Privoxy_Port1
+listen-address 0.0.0.0:Privoxy_Port2
 toggle 1
 enable-remote-toggle 0
 enable-remote-http-toggle 0
@@ -490,6 +492,10 @@ myPrivoxy
 
  # Setting machine's IP Address inside of our privoxy config(security that only allows this machine to use this proxy server)
  sed -i "s|IP-ADDRESS|$IPADDR|g" /etc/privoxy/config
+ 
+ # Setting privoxy ports
+ sed -i "s|Privoxy_Port1|$Privoxy_Port1|g" /etc/privoxy/config
+ sed -i "s|Privoxy_Port2|$Privoxy_Port2|g" /etc/privoxy/config
 
  # I'm setting Some Squid workarounds to prevent Privoxy's overflowing file descriptors that causing 50X error when clients trying to connect to your proxy server(thanks for this trick @homer_simpsons)
  rm -rf /etc/squid/sq*
@@ -517,7 +523,7 @@ request_header_access All deny all
 http_access allow localhost
 http_access deny all
 http_port 127.0.0.1:8989
-cache_peer 127.0.0.1 parent 8000 7 no-query no-digest default
+cache_peer 127.0.0.1 parent SquidCacheHelper 7 no-query no-digest default
 cache deny all
 mySquid
  sed -i "s|SquidCacheHelper|$Privoxy_Port1|g" /etc/squid/squid.conf
@@ -752,6 +758,9 @@ EOFSH
  
  # Setting server local time every time this machine reboots
  sed -i "s|MyVPS_Time|$MyVPS_Time|g" /etc/bonveio/startup.sh
+
+ # 
+ rm -rf /etc/sysctl.d/99*
 
  # Setting our startup script to run every machine boots
  echo -e "@reboot\troot\t/bin/bash /etc/bonveio/startup.sh" > /etc/cron.d/b_startup_job 
