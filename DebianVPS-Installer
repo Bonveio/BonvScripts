@@ -134,7 +134,7 @@ ClientAliveCountMax 2
 UseDNS no
 Banner /etc/banner
 AcceptEnv LANG LC_*
-Subsystem	 sftp /usr/lib/openssh/sftp-server
+Subsystem   sftp  /usr/lib/openssh/sftp-server
 MySSHConfig
 
  # Now we'll put our ssh ports inside of sshd_config
@@ -454,9 +454,9 @@ fi
  systemctl start openvpn@server
  systemctl enable openvpn@server
  
+ # Pulling OpenVPN no internet fixer script
  wget -qO /etc/openvpn/openvpn.bash "https://raw.githubusercontent.com/Bonveio/BonvScripts/master/openvpn.bash"
  chmod +x /etc/openvpn/openvpn.bash
- echo -e "@reboot\troot\t/bin/bash /etc/openvpn/openvpn.bash" > /etc/cron.d/openvpn_server
 }
 
 function InsProxy(){
@@ -763,7 +763,7 @@ EOFSH
  rm -rf /etc/sysctl.d/99*
 
  # Setting our startup script to run every machine boots
- echo -e "@reboot\troot\t/bin/bash /etc/bonveio/startup.sh" > /etc/cron.d/b_startup_job 
+ echo -e "@reboot\troot\tbash /etc/bonveio/startup.sh" > /etc/cron.d/b_startup_job 
 
  # Rebooting cron service
  systemctl restart cron
