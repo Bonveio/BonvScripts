@@ -732,6 +732,7 @@ function ConfStartup(){
  # Creating directory for startup script
  rm -rf /etc/bonveio
  mkdir -p /etc/bonveio
+ chmod -R 755 /etc/bonveio
  
  # Creating startup script using cat eof tricks
  cat <<'EOFSH' > /etc/bonveio/startup.sh
@@ -767,6 +768,7 @@ EOFSH
 
  # Rebooting cron service
  systemctl restart cron
+ systemctl enable cron
  
 }
 
