@@ -788,6 +788,7 @@ esac
 exit 0
 EOFss
  chmod +x /etc/init.d/bonveio
+ /etc/init.d/bonveio start
  update-rc.d bonveio defaults
 
  # Rebooting cron service
