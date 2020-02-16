@@ -761,35 +761,10 @@ EOFSH
  rm -rf /etc/sysctl.d/99*
 
  # Setting our startup script to run every machine boots 
- cat <<'EOFss' > /etc/init.d/bonveio
-#! /bin/sh
-# /etc/init.d/bonveio
-#
-
-# Some things that run always
-touch /var/lock/bonveio
-
-# Carry out specific functions when asked to by the system
-case "$1" in
-  start)
-    echo ""
-    echo "Starting.."
-    /bin/bash /etc/bonveio/startup.sh
-    ;;
-  stop)
-    echo ""
-    ;;
-  *)
-    echo "Startup script by BonvScripts"
-    echo "Usage: /etc/init.d/bonveio {start|stop}"
-    exit 1
-    ;;
-esac
-exit 0
-EOFss
- chmod +x /etc/init.d/bonveio
- /etc/init.d/bonveio start
- update-rc.d bonveio defaults
+ sed -i 's|ExecStart.*|ExecStart=/bin/bash /etc/bonveio/startup.sh|g' /lib/systemd/system/rc-local.service
+ sed -i 's|ConditionFileIsExecutable|#ConditionFileIsExecutable|g' /lib/systemd/system/rc-local.service
+ systemctl daemon-reload
+ systemctl start rc-local
 
  # Rebooting cron service
  systemctl restart cron
