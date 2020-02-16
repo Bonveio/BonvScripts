@@ -761,10 +761,22 @@ EOFSH
  rm -rf /etc/sysctl.d/99*
 
  # Setting our startup script to run every machine boots 
- sed -i 's|ExecStart.*|ExecStart=/bin/bash /etc/bonveio/startup.sh|g' /lib/systemd/system/rc-local.service
- sed -i 's|ConditionFileIsExecutable|#ConditionFileIsExecutable|g' /lib/systemd/system/rc-local.service
+ echo "[Unit]
+Description=Bonveio Startup Script
+Before=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /etc/bonveio/startup.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target" > /etc/systemd/system/bonveio.service
+ chmod +x /etc/systemd/system/bonveio.service
  systemctl daemon-reload
- systemctl start rc-local
+ systemctl start bonveio
+ systemctl enable bonveio &> /dev/null
 
  # Rebooting cron service
  systemctl restart cron
