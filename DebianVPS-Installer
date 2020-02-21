@@ -96,7 +96,7 @@ function InstWebmin(){
  wget -qO webmin.deb "$WebminFile"
  
  # Installing .deb package for webmin
- dpkg -s --install webmin.deb
+ dpkg --install webmin.deb
  
  rm -rf webmin.deb
  
