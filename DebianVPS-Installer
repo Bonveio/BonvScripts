@@ -73,6 +73,7 @@ function InstUpdates(){
 
  # Installing all required packages to install Webmin
  apt-get install perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python dbus libxml-parser-perl -y
+ apt-get install shared-mime-info -y
  
  # Installing a text colorizer
  gem install lolcat
