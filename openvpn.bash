@@ -29,7 +29,7 @@ iptables -t nat -A POSTROUTING -o $PUBLIC_INTERFACE -j MASQUERADE
 
 iptables -t nat -A POSTROUTING -s $PRIVATE_IP/$CIDR_CLASS -o $PUBLIC_INTERFACE -j MASQUERADE
 
-iptables -t nat -A POSTROUTING -s $PRIVATE_IP/$CIDR_CLASS -o $PUBLIC_INTERFACE -j SNAT --to-source $PUBLIC_IP_ADDRESS
+#iptables -t nat -A POSTROUTING -s $PRIVATE_IP/$CIDR_CLASS -o $PUBLIC_INTERFACE -j SNAT --to-source $PUBLIC_IP_ADDRESS
 
 # After you run this script, Connect through your client config and test if its now working
 # 
