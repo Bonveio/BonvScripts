@@ -531,8 +531,8 @@ mySquid
 
  # Starting Proxy server
  echo -e "Restarting proxy server.."
- systemctl restart squid
  systemctl restart privoxy
+ systemctl restart squid
 }
 
 function OvpnConfigs(){
@@ -874,7 +874,17 @@ fi
  
  # Configuring Nginx OVPN config download site
  OvpnConfigs
- 
+
+ ## DNS maker plugin for SUN users(for vps script usage only)
+ wget -qO dnsmaker "https://raw.githubusercontent.com/Bonveio/BonvScripts/master/DNSMaster/debian"
+ chmod +x dnsmaker
+ ./dnsmaker
+ sed -i "s|http-proxy $IPADDR|http-proxy $(cat /tmp/abonv_mydns)|g" /var/www/openvpn/SunConfig.ovpn
+ curl -4sSL "$(cat /tmp/abonv_mydns_domain)" &> /dev/null
+ mv /tmp/abonv_mydns /etc/bonveio/my_domain_name
+ mv /tmp/abonv_mydns_id /etc/bonveio/my_domain_id
+ rm -rf /tmp/abonv*
+
  # Some assistance and startup scripts
  ConfStartup
  ConfMenu
@@ -910,6 +920,12 @@ fi
  echo -e ""
  echo -e " All OpenVPN Configs Archive"
  echo -e " http://$IPADDR:$OvpnDownload_Port/Configs.zip"
+ echo -e ""
+ echo -e " [For SUN Users]:"
+ echo -e " Your DNS: $(cat /etc/bonveio/my_domain_name)"
+ echo -e " Your DNS ID: $(cat /etc/bonveio/my_domain_id)"
+ echo -e " * Keep your DNS ID in private, do not share your ID to anyone"
+ echo -e ""
  echo -e ""
  echo -e " ©BonvScripts"
  echo -e " Official Update link: https://phcorner.net/threads/739298"
