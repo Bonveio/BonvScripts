@@ -1,0 +1,10 @@
+<b>
+:::::::::::::::::::::::::::::::::::::::::::::::<br>
+:::::::::::: BonvScripts ::::::::::::::<br>
+:::    ✮ No DDoS / Phishing    :::::::<br>
+:::    ✮ No Torrent / Spam     :::::::::<br>
+:::    ✮ No Over-Downloading   :::<br>
+:::    ✮ Avoid Multilogin      ::::::::::::<br>
+:::    ✮ No Proxy Abuse        :::::::::::::<br>
+:::    ✮ Avoid ServerIP Abuse  :::::<br>
+:::::::::::::::::::::::::::::::::::::::::::::::</b>

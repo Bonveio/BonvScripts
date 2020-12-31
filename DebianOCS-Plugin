@@ -1,0 +1,53 @@
+#!/bin/bash
+# Simple OCS Panel plugin script
+# by Bon-chan
+#######
+#######
+## Config ##
+############
+# Panel Directory
+myDir='/home/panel/html' # Avoid Backslashes
+# OCS Panel source code link
+# Must be a valid ocs panel zipfile
+mySrc='https://dropbox.com/testfile.zip'
+############
+############
+
+if [[ $EUID -ne 0 ]]; then
+ echo -e "[\e[31mError\e[0m] This script must be run as root, exiting..."
+ exit 1
+fi
+
+source /etc/os-release
+if [[ "$ID" != 'debian' ]]; then
+ echo -e "[\e[31mError\e[0m] This script is for Debian instance only, exiting..."
+ exit 1
+elif [[ "$VERSION_ID" != '9' ]]; then
+ echo -e "[\e[31mError\e[0m] This script is for Debian Stretch distribution only, exiting..."
+ exit 1
+fi
+
+if [[ ! -e "$myDir" ]]; then
+ echo -e "[\e[31mError\e[0m] Panel's Directory not found, exiting..."
+ exit 1
+fi
+
+srcStats="$(wget --spider -4qS "$mySrc" 2>&1 | grep "HTTP/" | awk '{print $2}')"
+if [[ "$srcStats" != '200' ]]; then
+ echo -e "[\e[31mError\e[0m] Source code Download failed.\n Error code: \e[1;31m$srcStats\e[0m"
+ exit 1
+fi
+
+cd "$myDir"
+wget -4O src.zip "$mySrc"
+unzip -qq src.zip && rm -f src.zip
+
+if [[ ! -e "$myDir/installation" ]]; then
+ echo -e "[\e[31mError\e[0m] Source code you provided is not a valid OCS Panel src, exiting..."
+ exit 1
+ cd -
+fi
+cd -
+echo -e "\n\n Default Panel source code replaced successfully\n"
+echo -e ""
+exit 1
